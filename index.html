@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Wyniki głosowania</title>
+
+    <style>
+      * {
+        font-family: sans-serif;
+      }
+      h1 {
+        font-size: 150%;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Wyniki głosowania</h1>
+    <canvas id="myChart" width="400" height="200"></canvas>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script>
+      const socket = io();
+      /*
+        Wartości do zmiany
+        opcje - opcje glosowania
+        glosowanie - nazwa glosowania jaka była ustawiona po stronie serwera
+        */
+      const opcje = ["opcja1", "opcja2", "opcja3", "opcja4"];
+      const glosowanie = `test1`;
+      const label = "Glosy";
+      let new_chart;
+      chart(glosowanie, opcje, label);
+      socket.on("update", () => {
+        chart(glosowanie, opcje, label);
+      });
+      function chart(poll, opcje, label) {
+        fetch(`/chart/${poll}`)
+          .then((response) => response.json())
+          .then((data) => {
+            const labels = data.map((item) => opcje[item.vote]);
+            const votes = data.map((item) => item.votes); // e.g., [2, 5, 3]
+            const ctx = document.getElementById("myChart").getContext("2d");
+            const backgroundColors = data.map((_, index) => {
+              const colors = [
+                "rgba(255, 99, 132, 0.6)",
+                "rgba(54, 162, 235, 0.6)",
+                "rgba(255, 206, 86, 0.6)",
+                "rgba(75, 192, 192, 0.6)",
+                "rgba(153, 102, 255, 0.6)",
+                "rgba(255, 159, 64, 0.6)",
+              ];
+              return colors[index % colors.length]; // cycle if more items than colors
+            });
+
+            const borderColors = backgroundColors.map(
+              (color) => color.replace("0.6", "1") // make border fully opaque
+            );
+            if (new_chart) {
+              new_chart.destroy();
+            }
+            Chart.register(ChartDataLabels);
+            new_chart = new Chart(ctx, {
+              type: "bar",
+              data: {
+                labels: labels,
+                datasets: [
+                  {
+                    label: label,
+                    data: votes,
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
+                    borderWidth: 1,
+                  },
+                ],
+              },
+              options: {
+                scales: {
+                  x: {
+                    grid: {
+                      display: false,
+                    },
+                    ticks: {
+                      font: {
+                        size: 24,
+                      },
+                    },
+                  },
+                  y: {
+                    beginAtZero: true,
+                    grid: {
+                      display: false,
+                    },
+                    ticks: {
+                      font: {
+                        size: 32,
+                      },
+                      stepSize: 1,
+                    },
+                  },
+                },
+                plugins: {
+                  legend: {
+                    position: "top", // Position legend at the top
+                    labels: {
+                      font: {
+                        size: 20, // Set font size for legend
+                      },
+                      boxWidth: 40, // Set width of the color boxes in the legend
+                    },
+                  },
+                  datalabels: {
+                    anchor: "end", // Position the label at the end of the bar (on top)
+                    align: "end", // Align the label to the top of the bar
+                    font: {
+                      size: 28, // Font size for the label
+                      weight: "bold", // Optional: Make the font bold
+                    },
+                    color: "#000", // Set the label text color (black)
+                    formatter: (value) => value, // Display the value (vote count)
+                    padding: 5, // Add some padding so the label doesn't overlap with the bar
+                  },
+                },
+              },
+            });
+          });
+      }
+    </script>
+  </body>
+</html>
