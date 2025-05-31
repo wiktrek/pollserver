@@ -17,7 +17,7 @@ interface Vote {
 }
 // db
 var con = mysql.createConnection({
-  host: "192.168.1.25",
+  host: process.env.HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB,

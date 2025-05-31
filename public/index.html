@@ -21,20 +21,19 @@
     <script src="/chart.js"></script>
     <script src="/chartjs-plugin-datalabels.js"></script>
     <script>
+      /*
+        Idc about the code it works and everything is on the backend.
+      */
       const socket = io();
       let new_chart;
       fetch("/getpolldata")
         .then((response) => response.json())
         .then((json) => {
-          const data = {};
-          data.glosowanie = json.poll;
-          data.tytul = json.title;
-          data.opcje = json.options;
-          console.log(data);
-          const { glosowanie, opcje, tytul } = data;
-          chart(glosowanie, opcje, tytul);
+          const { poll, options: o, title } = json;
+          const options = o.split(";");
+          chart(poll, options, title);
           socket.on("update", () => {
-            chart(glosowanie, opcje, tytul);
+            chart(poll, options, title);
           });
         });
       function chart(poll, opcje, label) {
