@@ -4,18 +4,23 @@ const path = require("path");
 const http = require("http");
 const { Server } = require("socket.io");
 
+require("dotenv").config();
+
+const poll = process.env.POLL;
+const key = process.env.KEY;
 const app = express();
-const port = 3000;
+const port = 8080;
+
 interface Vote {
   vote: string;
   votes: number;
 }
 // db
 var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "votedb",
+  host: "192.168.1.25",
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB,
 });
 // WebSockets
 const server = http.createServer(app);
@@ -24,16 +29,29 @@ io.on("connection", (socket) => {
   console.log("client connected", socket.id);
   socket.on("disconnect", () => console.log("User disconnected"));
 });
+// npm
+app.get("/chart.js", (req, res) => {
+  res.sendFile(path.join(__dirname, "node_modules/chart.js/dist/chart.umd.js"));
+});
+
+// Serve chartjs-plugin-datalabels
+app.get("/chartjs-plugin-datalabels.js", (req, res) => {
+  res.sendFile(
+    path.join(
+      __dirname,
+      "node_modules/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.min.js"
+    )
+  );
+});
 
 app.get("/vote/:vote/:voter/:value", (req, res) => {
   const value = req.params["value"];
-  if (value != "kurwa") return res.send("brak klucza");
+  if (value != key) return res.send("brak klucza");
   const vote = req.params["vote"];
   const voter = req.params["voter"];
   /*
     zmien poll tu i w index.html
   */
-  const poll = `test1`;
   if (vote > 3 || vote < 0) return res.send("wartosci vote sa od 1 do 4");
   con.query(
     "SELECT * FROM vote WHERE voter = ? AND poll = ? LIMIT 1",
@@ -78,6 +96,8 @@ app.get("/chart/:poll", async (req, res) => {
   const votes = await getVotes(poll);
   res.json(votes);
 });
+
+// public
 app.use(express.static("public"));
 server.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
