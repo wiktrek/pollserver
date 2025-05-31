@@ -43,7 +43,15 @@ app.get("/chartjs-plugin-datalabels.js", (req, res) => {
     )
   );
 });
-
+app.get("/removevotes/:poll/:value", (req, res) => {});
+app.get("/getpolldata", (req, res) => {
+  res.send({
+    status: 200,
+    poll: poll as string,
+    title: process.env.TITLE,
+    options: process.env.OPTIONS,
+  });
+});
 app.get("/vote/:vote/:voter/:value", (req, res) => {
   const value = req.params["value"];
   if (value != key) return res.send("brak klucza");
@@ -72,7 +80,7 @@ app.get("/vote/:vote/:voter/:value", (req, res) => {
         console.log("Row inserted, ID:", result.insertId);
       });
       io.emit("update", "test");
-      res.send(`${vote}, ${voter}, ${poll}`);
+      res.send({ status: 200 });
     }
   );
 });

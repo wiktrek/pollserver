@@ -22,19 +22,21 @@
     <script src="/chartjs-plugin-datalabels.js"></script>
     <script>
       const socket = io();
-      /*
-        Wartości do zmiany
-        opcje - opcje glosowania
-        glosowanie - nazwa glosowania jaka była ustawiona po stronie serwera
-        */
-      const opcje = ["opcja1", "opcja2", "opcja3", "opcja4"];
-      const glosowanie = `test1`;
-      const label = "Glosy";
       let new_chart;
-      chart(glosowanie, opcje, label);
-      socket.on("update", () => {
-        chart(glosowanie, opcje, label);
-      });
+      fetch("/getpolldata")
+        .then((response) => response.json())
+        .then((json) => {
+          const data = {};
+          data.glosowanie = json.poll;
+          data.tytul = json.title;
+          data.opcje = json.options;
+          console.log(data);
+          const { glosowanie, opcje, tytul } = data;
+          chart(glosowanie, opcje, tytul);
+          socket.on("update", () => {
+            chart(glosowanie, opcje, tytul);
+          });
+        });
       function chart(poll, opcje, label) {
         fetch(`/chart/${poll}`)
           .then((response) => response.json())
