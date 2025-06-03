@@ -53,9 +53,11 @@ app.get("/api/removevotes/:poll/:value", (req, res) => {
       [poll_to_delete],
       (err, result) => {
         console.log(result);
+        res.send("ez");
       }
     );
   }
+  res.send("no");
 });
 app.get("/api/getpolldata", (req, res) => {
   res.send({
