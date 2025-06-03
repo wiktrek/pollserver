@@ -53,6 +53,10 @@ app.get("/api/removevotes/:poll/:value", (req, res) => {
       [poll_to_delete],
       (err, result) => {
         console.log(result);
+        if (err) {
+          console.error(err);
+          return res.status(500).send("Wystąpił błąd serwera");
+        }
         res.send("ez");
       }
     );
