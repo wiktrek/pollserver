@@ -24,7 +24,7 @@
       /*
         Idc about the code it works and everything is on the backend.
       */
-      const { Chart, Colors } = window;
+      const { Chart, Colors } = window.Chart;
       const socket = io();
       let new_chart;
       fetch("/api/getpolldata")
@@ -107,9 +107,6 @@
                     color: "#000", // Set the label text color (black)
                     formatter: (value) => value, // Display the value (vote count)
                     padding: 5, // Add some padding so the label doesn't overlap with the bar
-                  },
-                  colors: {
-                    enabled: true,
                   },
                 },
               },
