@@ -47,6 +47,7 @@
             if (new_chart) {
               new_chart.destroy();
             }
+            Chart.register(Colors);
             Chart.register(ChartDataLabels);
             new_chart = new Chart(ctx, {
               type: "bar",
