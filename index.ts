@@ -9,7 +9,7 @@ require("dotenv").config();
 const poll = process.env.POLL;
 const key = process.env.KEY;
 const app = express();
-const port = 3000;
+const port = 80;
 
 interface Vote {
   vote: string;
