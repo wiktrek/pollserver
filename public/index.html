@@ -24,7 +24,6 @@
       /*
         Idc about the code it works and everything is on the backend.
       */
-      const { Chart, Colors } = window.Chart;
       const socket = io();
       let new_chart;
       fetch("/api/getpolldata")
@@ -44,11 +43,17 @@
             const labels = data.map((item) => opcje[item.vote]);
             const votes = data.map((item) => item.votes); // e.g., [2, 5, 3]
             const ctx = document.getElementById("myChart").getContext("2d");
-
+            const colors = [
+              "#36A2EB",
+              "#FF6384",
+              "#FFCE56",
+              "#4BC0C0",
+              "#9966FF",
+              "#FF9F40",
+            ];
             if (new_chart) {
               new_chart.destroy();
             }
-            Chart.register(Colors);
             Chart.register(ChartDataLabels);
             new_chart = new Chart(ctx, {
               type: "bar",
@@ -59,6 +64,7 @@
                     label: label,
                     data: votes,
                     borderWidth: 1,
+                    backgroundColor: colors,
                   },
                 ],
               },
