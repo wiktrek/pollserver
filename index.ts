@@ -47,7 +47,7 @@ app.get("/chartjs-plugin-datalabels.js", (req, res) => {
 app.get("/api/removevotes/:poll/:value", (req, res) => {
   const value = req.params["value"];
   const poll_to_delete = req.params["poll"];
-  if (value === process.env.ADMN_PASSWD) {
+  if (value === process.env.ADMIN_PASSWD) {
     con.query(
       "DELETE FROM vote WHERE poll = ?",
       [poll_to_delete],
