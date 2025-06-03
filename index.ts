@@ -57,7 +57,7 @@ app.get("/api/removevotes/:poll/:value", (req, res) => {
           console.error(err);
           return res.status(500).send("Wystąpił błąd serwera");
         }
-        res.send("ez");
+        return res.status(200).send("ez");
       }
     );
   }
@@ -73,7 +73,7 @@ app.get("/api/getpolldata", (req, res) => {
 });
 app.get("/api/vote/:vote/:voter/:value", (req, res) => {
   const value = req.params["value"];
-  if (value != key) return res.send("brak klucza");
+  if (value != key) return res.status(401).send("brak klucza");
   const vote = req.params["vote"];
   const voter = req.params["voter"];
   /*
@@ -90,7 +90,7 @@ app.get("/api/vote/:vote/:voter/:value", (req, res) => {
         return res.status(500).send("Wystąpił błąd serwera");
       }
       if (result.length != 0) {
-        return res.send(`Juz glosowales na to glosowanie`);
+        return res.status(400).send(`Juz glosowales na to glosowanie`);
       }
       const sql = `INSERT INTO vote (poll,vote, voter) VALUES (?, ?, ?)`;
       console.log("voting on", vote, voter, poll);
@@ -121,7 +121,7 @@ function getVotes(poll: string): Promise<Vote[]> {
 app.get("/api/chart/:poll", async (req, res) => {
   const poll = req.params["poll"];
   const votes = await getVotes(poll);
-  res.json(votes);
+  res.status(200).json(votes);
 });
 
 // public
