@@ -9,7 +9,7 @@ require("dotenv").config();
 const poll = process.env.POLL;
 const key = process.env.KEY;
 const app = express();
-const port = 8080;
+const port = 80;
 
 interface Vote {
   vote: string;
@@ -44,24 +44,8 @@ app.get("/chartjs-plugin-datalabels.js", (req, res) => {
   );
 });
 
-app.get("/api/removevotes/:poll/:value", (req, res) => {
-  const value = req.params["value"];
-  const poll_to_delete = req.params["poll"];
-  if (value === process.env.ADMIN_PASSWD) {
-    con.query(
-      "DELETE FROM vote WHERE poll = ?",
-      [poll_to_delete],
-      (err, result) => {
-        console.log(result);
-        if (err) {
-          console.error(err);
-          return res.status(500).send("Wystąpił błąd serwera");
-        }
-        return res.status(200).send("ez");
-      }
-    );
-  }
-  res.send("no");
+app.get("/api", (req, res) => {
+  res.status(404).send("Api endpoint not found.");
 });
 app.get("/api/getpolldata", (req, res) => {
   res.send({
@@ -76,9 +60,6 @@ app.get("/api/vote/:vote/:voter/:value", (req, res) => {
   if (value != key) return res.status(401).send("brak klucza");
   const vote = req.params["vote"];
   const voter = req.params["voter"];
-  /*
-    zmien poll tu i w index.html
-  */
   if (vote > 3 || vote < 0) return res.send("wartosci vote sa od 1 do 4");
   con.query(
     "SELECT * FROM vote WHERE voter = ? AND poll = ? LIMIT 1",
@@ -105,7 +86,6 @@ app.get("/api/vote/:vote/:voter/:value", (req, res) => {
 });
 function getVotes(poll: string): Promise<Vote[]> {
   const sql = `SELECT vote, COUNT(*) AS vote_count FROM vote WHERE \`poll\` = ? GROUP BY vote;`;
-
   return new Promise((resolve, reject) => {
     con.query(sql, [poll], (err, results) => {
       if (err) return reject(err);
