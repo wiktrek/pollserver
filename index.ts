@@ -106,6 +106,6 @@ app.get("/api/chart/:poll", async (req, res) => {
 
 // public
 app.use(express.static("public"));
-server.listen(port, () => {
+server.listen(port, "0.0.0.0", () => {
   console.log(`Example app listening on port ${port}`);
 });
