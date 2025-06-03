@@ -43,21 +43,7 @@
             const labels = data.map((item) => opcje[item.vote]);
             const votes = data.map((item) => item.votes); // e.g., [2, 5, 3]
             const ctx = document.getElementById("myChart").getContext("2d");
-            const backgroundColors = data.map((_, index) => {
-              const colors = [
-                "rgba(255, 99, 132, 0.6)",
-                "rgba(54, 162, 235, 0.6)",
-                "rgba(255, 206, 86, 0.6)",
-                "rgba(75, 192, 192, 0.6)",
-                "rgba(153, 102, 255, 0.6)",
-                "rgba(255, 159, 64, 0.6)",
-              ];
-              return colors[index % colors.length]; // cycle if more items than colors
-            });
 
-            const borderColors = backgroundColors.map(
-              (color) => color.replace("0.6", "1") // make border fully opaque
-            );
             if (new_chart) {
               new_chart.destroy();
             }
@@ -70,8 +56,6 @@
                   {
                     label: label,
                     data: votes,
-                    backgroundColor: backgroundColors,
-                    borderColor: borderColors,
                     borderWidth: 1,
                   },
                 ],
