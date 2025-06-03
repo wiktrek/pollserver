@@ -43,8 +43,21 @@ app.get("/chartjs-plugin-datalabels.js", (req, res) => {
     )
   );
 });
-app.get("/removevotes/:poll/:value", (req, res) => {});
-app.get("/getpolldata", (req, res) => {
+
+app.get("/api/removevotes/:poll/:value", (req, res) => {
+  const value = req.params["value"];
+  const poll_to_delete = req.params["poll"];
+  if (value === process.env.ADMN_PASSWD) {
+    con.query(
+      "DELETE FROM vote WHERE poll = ?",
+      [poll_to_delete],
+      (err, result) => {
+        console.log(result);
+      }
+    );
+  }
+});
+app.get("/api/getpolldata", (req, res) => {
   res.send({
     status: 200,
     poll: poll as string,
@@ -52,7 +65,7 @@ app.get("/getpolldata", (req, res) => {
     options: process.env.OPTIONS,
   });
 });
-app.get("/vote/:vote/:voter/:value", (req, res) => {
+app.get("/api/vote/:vote/:voter/:value", (req, res) => {
   const value = req.params["value"];
   if (value != key) return res.send("brak klucza");
   const vote = req.params["vote"];
@@ -99,7 +112,7 @@ function getVotes(poll: string): Promise<Vote[]> {
     });
   });
 }
-app.get("/chart/:poll", async (req, res) => {
+app.get("/api/chart/:poll", async (req, res) => {
   const poll = req.params["poll"];
   const votes = await getVotes(poll);
   res.json(votes);
